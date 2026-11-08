@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>API SAF-T Portugal — validar, converter, resumir</title>
+  <meta name="description" content="API para validar, converter e resumir ficheiros SAF-T (PT) 1.04_01. A demonstração no browser não envia o ficheiro.">
+  <style>
+    :root {
+      --ink: #1c1915;
+      --muted: #5c564c;
+      --paper: #f3efe4;
+      --card: #fffdf8;
+      --line: #d9d0c1;
+      --stamp: #0f6e56;
+      --stamp-dark: #0a4a3a;
+      --warn: #8a5a12;
+      --bad: #8d2b2b;
+      --ok: #0f6e56;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 400px at 10% -10%, #e7f3ee, transparent 50%),
+        var(--paper);
+      font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+      line-height: 1.55;
+    }
+    header, main, footer { width: min(960px, calc(100% - 2rem)); margin: 0 auto; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 0; }
+    .brand { font-family: Georgia, "Times New Roman", serif; font-size: 1.15rem; letter-spacing: 0.01em; }
+    .brand span { color: var(--stamp); }
+    button.lang {
+      border: 1px solid var(--ink);
+      background: transparent;
+      color: var(--ink);
+      padding: 0.35rem 0.8rem;
+      cursor: pointer;
+      font: inherit;
+    }
+    button.lang:hover { background: var(--ink); color: var(--paper); }
+    h1 { font-family: Georgia, serif; font-weight: 500; font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.1; margin: 0.2rem 0 0.8rem; }
+    h2 { font-family: Georgia, serif; font-weight: 500; margin-top: 2.4rem; }
+    .lede { font-size: 1.15rem; max-width: 40rem; }
+    .note {
+      background: #fff4d6;
+      border: 1px solid #e0b84a;
+      padding: 0.8rem 1rem;
+      max-width: 42rem;
+    }
+    .grid { display: grid; gap: 0.8rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    article.card, .endpoint {
+      background: var(--card);
+      border: 1px solid var(--line);
+      padding: 1rem 1.1rem;
+    }
+    code, pre { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 0.86rem; }
+    pre {
+      background: #1c1915;
+      color: #f3efe4;
+      padding: 0.9rem 1rem;
+      overflow: auto;
+    }
+    a { color: var(--stamp-dark); }
+    .links a { margin-right: 1rem; }
+    textarea {
+      width: 100%;
+      min-height: 11rem;
+      font: 0.9rem ui-monospace, Consolas, monospace;
+      padding: 0.7rem;
+      border: 1px solid var(--ink);
+      background: var(--card);
+      color: var(--ink);
+    }
+    button.run {
+      background: var(--stamp);
+      color: white;
+      border: 0;
+      padding: 0.55rem 1rem;
+      font: inherit;
+      cursor: pointer;
+      margin-top: 0.6rem;
+    }
+    button.run:hover { background: var(--stamp-dark); }
+    ul.findings { list-style: none; padding: 0; }
+    ul.findings li { border-left: 4px solid var(--line); padding: 0.35rem 0.7rem; margin: 0.4rem 0; background: var(--card); }
+    li.ok { border-color: var(--ok); }
+    li.warn { border-color: var(--warn); }
+    li.bad { border-color: var(--bad); }
+    footer { padding: 2rem 0 3rem; color: var(--muted); font-size: 0.92rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">SAF-T <span>PT</span></div>
+    <button class="lang" id="lang" type="button">English</button>
+  </header>
+  <main id="app"></main>
+  <noscript>
+    <p>API para validar, converter e resumir SAF-T (PT) 1.04_01. A validação completa está na API. Active o JavaScript para a demonstração local, que não envia o ficheiro.</p>
+  </noscript>
+  <footer id="foot"></footer>
+  <script>
+    const copy = {
+      pt: {
+        html: "pt-PT",
+        toggle: "English",
+        title: "Validar um SAF-T sem o abrir à mão",
+        lede: "Esta API lê um ficheiro SAF-T (PT) 1.04_01, aplica o XSD oficial e um conjunto de regras de negócio, e devolve um relatório com identificadores estáveis. Também converte as facturas de venda para JSON, CSV ou XLSX e resume totais por mês, tipo e cliente.",
+        note: "Um resultado valid: true é informativo. Não significa que a Autoridade Tributária e Aduaneira aceita o ficheiro.",
+        doesTitle: "O que faz",
+        cards: [
+          ["Validar", "Codificação Windows-1252, XSD 1.1 (incluindo xs:assert) e regras de negócio. HTTP 200 mesmo quando o ficheiro tem erros; o campo valid diz o resultado."],
+          ["Converter", "Facturas de venda para JSON, CSV (ponto e vírgula, com BOM) ou XLSX com as folhas Documents, Lines, Customers, Products e TaxTable."],
+          ["Resumir", "Totais por mês, tipo de documento, taxa e os clientes com maior valor líquido. As notas de crédito reduzem o mês."]
+        ],
+        endTitle: "Endpoints",
+        examplesTitle: "Exemplos",
+        marketTitle: "Onde a API vai estar listada",
+        market: "Os endereços abaixo são marcadores. Substitua-os pelo URL real da listagem quando a Zyla e a RapidAPI estiverem activas.",
+        legalTitle: "Privacidade e termos",
+        legal: "As páginas são minutas, em português e em inglês. Não são aconselhamento jurídico. Na API em execução os mesmos textos estão em /privacy e /terms.",
+        demoTitle: "Demonstração no browser",
+        demoNote: "Cole o XML aqui. Nada é enviado para um servidor: a verificação corre neste separador. Confirma se o XML está bem formado, se o cabeçalho tem os campos obrigatórios, o dígito de controlo do NIF e os totais simples de débito e crédito. A validação completa — XSD 1.1, ATCUD, isenções, taxas por região, estado dos documentos e balanços contabilísticos — está na API.",
+        placeholder: "Cole aqui um AuditFile SAF-T (PT) 1.04_01…",
+        run: "Verificar neste browser",
+        empty: "Cole um XML primeiro.",
+        foot: "Ficheiros processados pela API ficam em memória e são descartados com a resposta. Esta página estática não os recebe."
+      },
+      en: {
+        html: "en",
+        toggle: "Português",
+        title: "Check a SAF-T file without reading it by hand",
+        lede: "This API reads a SAF-T (PT) 1.04_01 file, runs the official XSD and a set of business rules, and returns a report with stable rule ids. It also converts sales invoices to JSON, CSV or XLSX and summarises totals by month, type and customer.",
+        note: "A valid: true result is informational. It does not mean the Portuguese Tax and Customs Authority will accept the file.",
+        doesTitle: "What it does",
+        cards: [
+          ["Validate", "Windows-1252 encoding, XSD 1.1 (including xs:assert) and business rules. HTTP 200 even when the file has errors; the valid field is the result."],
+          ["Convert", "Sales invoices to JSON, CSV (semicolon, with a BOM) or XLSX with sheets Documents, Lines, Customers, Products and TaxTable."],
+          ["Summarise", "Totals by month, document type, tax rate and the customers with the largest net amount. Credit notes reduce the month."]
+        ],
+        endTitle: "Endpoints",
+        examplesTitle: "Examples",
+        marketTitle: "Where the API will be listed",
+        market: "The links below are placeholders. Replace them with the real listing URL when Zyla and RapidAPI are live.",
+        legalTitle: "Privacy and terms",
+        legal: "The pages are templates, in Portuguese and English. They are not legal advice. On the running API the same texts are at /privacy and /terms.",
+        demoTitle: "Browser demo",
+        demoNote: "Paste the XML here. Nothing is sent to a server: the check runs in this tab. It looks at well-formedness, required header fields, the NIF check digit and simple debit and credit totals. Full validation — XSD 1.1, ATCUD, exemptions, regional tax rates, document status and ledger balances — is in the API.",
+        placeholder: "Paste a SAF-T (PT) 1.04_01 AuditFile…",
+        run: "Check in this browser",
+        empty: "Paste some XML first.",
+        foot: "Files processed by the API stay in memory and are discarded with the response. This static page never receives them."
+      }
+    };
+
+    const endpoints = [
+      ["POST /v1/validate", "Relatório JSON. valid é true quando não há erros.", "JSON report. valid is true when there are no errors."],
+      ["POST /v1/convert?format=json|csv|xlsx", "Facturas de venda. level=documents|lines no JSON e no CSV.", "Sales invoices. level=documents|lines for JSON and CSV."],
+      ["POST /v1/summary", "Totais. Parâmetro opcional top, de 1 a 100.", "Totals. Optional top, from 1 to 100."],
+      ["GET /health", "Resposta {\"status\":\"UP\"} para monitores.", "Returns {\"status\":\"UP\"} for uptime monitors."]
+    ];
+
+    let lang = localStorage.getItem("saft-lang") || "pt";
+
+    function render() {
+      const t = copy[lang];
+      document.documentElement.lang = t.html;
+      document.title = lang === "pt"
+        ? "API SAF-T Portugal — validar, converter, resumir"
+        : "SAF-T Portugal API — validate, convert, summarise";
+      document.getElementById("lang").textContent = t.toggle;
+      const other = lang === "pt" ? "en" : "pt";
+      document.getElementById("app").innerHTML = `
+        <h1>${t.title}</h1>
+        <p class="lede">${t.lede}</p>
+        <p class="note">${t.note}</p>
+        <h2>${t.doesTitle}</h2>
+        <div class="grid">
+          ${t.cards.map(([h, p]) => `<article class="card"><h3>${h}</h3><p>${p}</p></article>`).join("")}
+        </div>
+        <h2>${t.endTitle}</h2>
+        ${endpoints.map(row => `<div class="endpoint"><strong><code>${row[0]}</code></strong><p>${row[lang === "pt" ? 1 : 2]}</p></div>`).join("")}
+        <h2>${t.examplesTitle}</h2>
+        <pre>curl -sS -F file=@fatura.xml https://api.example.com/v1/validate
+
+curl -sS -F file=@fatura.xml "https://api.example.com/v1/convert?format=csv"
+
+curl -sS -F file=@fatura.xml https://api.example.com/v1/summary</pre>
+        <h2>${t.marketTitle}</h2>
+        <p>${t.market}</p>
+        <p class="links">
+          <a href="https://zylalabs.com/">Zyla API Hub</a>
+          <a href="https://rapidapi.com/hub">RapidAPI Hub</a>
+        </p>
+        <h2>${t.legalTitle}</h2>
+        <p>${t.legal}</p>
+        <p class="links">
+          <a href="privacidade.html">Privacidade</a>
+          <a href="privacy.html">Privacy</a>
+          <a href="termos.html">Termos</a>
+          <a href="terms.html">Terms</a>
+        </p>
+        <h2>${t.demoTitle}</h2>
+        <p class="note">${t.demoNote}</p>
+        <textarea id="xml" placeholder="${t.placeholder}"></textarea>
+        <button class="run" id="run" type="button">${t.run}</button>
+        <ul class="findings" id="out"></ul>
+      `;
+      document.getElementById("foot").textContent = t.foot;
+      document.getElementById("run").addEventListener("click", demo);
+    }
+
+    document.getElementById("lang").addEventListener("click", () => {
+      lang = lang === "pt" ? "en" : "pt";
+      localStorage.setItem("saft-lang", lang);
+      const previous = document.getElementById("xml");
+      const text = previous ? previous.value : "";
+      render();
+      const area = document.getElementById("xml");
+      if (area) area.value = text;
+    });
+
+    function demo() {
+      const out = document.getElementById("out");
+      const text = document.getElementById("xml").value;
+      const pt = lang === "pt";
+      out.innerHTML = "";
+      if (!text.trim()) {
+        add(out, "warn", copy[lang].empty);
+        return;
+      }
+      const doc = new DOMParser().parseFromString(text, "application/xml");
+      if (doc.querySelector("parsererror")) {
+        add(out, "bad", pt ? "O XML não está bem formado." : "The XML is not well-formed.");
+        return;
+      }
+      add(out, "ok", pt ? "XML bem formado." : "XML is well-formed.");
+      const root = doc.documentElement;
+      const ns = root.namespaceURI;
+      const one = (name) => {
+        const nodes = ns ? root.getElementsByTagNameNS(ns, name) : root.getElementsByTagName(name);
+        return nodes.length ? (nodes[0].textContent || "").trim() : "";
+      };
+      const headerNames = ["AuditFileVersion", "CompanyID", "TaxRegistrationNumber", "TaxAccountingBasis", "FiscalYear", "StartDate", "EndDate", "CurrencyCode", "DateCreated"];
+      const missing = headerNames.filter(name => !one(name));
+      if (root.localName !== "AuditFile") {
+        add(out, "bad", pt ? "A raiz não é AuditFile." : "The root element is not AuditFile.");
+      } else if (missing.length) {
+        add(out, "bad", (pt ? "Cabeçalho sem: " : "Header is missing: ") + missing.join(", "));
+      } else {
+        add(out, "ok", (pt ? "Cabeçalho com os campos obrigatórios. Versão " : "Header has the required fields. Version ") + one("AuditFileVersion") + ", " + one("TaxAccountingBasis") + ".");
+      }
+      const nif = one("TaxRegistrationNumber");
+      if (nif) {
+        add(out, nifOk(nif) ? "ok" : "bad", (pt ? "NIF do cabeçalho " : "Header NIF ") + nif + (nifOk(nif) ? (pt ? " tem dígito de controlo válido." : " has a valid check digit.") : (pt ? " falha o dígito de controlo." : " fails the check digit.")));
+      }
+      totals(root, ns, out, pt);
+      add(out, "warn", pt
+        ? "Isto não é a validação completa. Use POST /v1/validate na API."
+        : "This is not the full validation. Use POST /v1/validate on the API.");
+    }
+
+    function totals(root, ns, out, pt) {
+      const all = (parent, name) => ns ? parent.getElementsByTagNameNS(ns, name) : parent.getElementsByTagName(name);
+      const sales = all(root, "SalesInvoices");
+      if (!sales.length) {
+        add(out, "ok", pt ? "Sem SalesInvoices para somar." : "No SalesInvoices to total.");
+        return;
+      }
+      const block = sales[0];
+      const stated = textOf(all(block, "TotalCredit")[0]);
+      let credit = 0;
+      let invoices = 0;
+      let grossMismatch = 0;
+      for (const inv of all(block, "Invoice")) {
+        invoices++;
+        for (const line of all(inv, "Line")) {
+          credit += num(textOf(all(line, "CreditAmount")[0]));
+        }
+        const net = num(textOf(all(inv, "NetTotal")[0]));
+        const tax = num(textOf(all(inv, "TaxPayable")[0]));
+        const gross = num(textOf(all(inv, "GrossTotal")[0]));
+        if (Math.abs(net + tax - gross) > 0.02) grossMismatch++;
+      }
+      const statedNum = num(stated);
+      const creditOk = stated === "" || Math.abs(statedNum - credit) <= 0.05;
+      add(out, creditOk ? "ok" : "bad", (pt ? "TotalCredit declarado " : "Declared TotalCredit ") + (stated || "—") + (pt ? " e soma dos créditos " : " and sum of credits ") + credit.toFixed(2) + " (" + invoices + (pt ? " facturas)." : " invoices)."));
+      if (grossMismatch) {
+        add(out, "bad", grossMismatch + (pt ? " factura(s) em que NetTotal + TaxPayable não fecha com GrossTotal." : " invoice(s) where NetTotal + TaxPayable does not match GrossTotal."));
+      } else if (invoices) {
+        add(out, "ok", pt ? "NetTotal + TaxPayable fecha com GrossTotal nas facturas vistas." : "NetTotal + TaxPayable matches GrossTotal on the invoices checked.");
+      }
+    }
+
+    function nifOk(raw) {
+      const digits = String(raw).replace(/^PT/i, "").replace(/\D/g, "");
+      if (!/^\d{9}$/.test(digits)) return false;
+      let sum = 0;
+      for (let i = 0; i < 8; i++) sum += Number(digits[i]) * (9 - i);
+      const rem = sum % 11;
+      const check = rem < 2 ? 0 : 11 - rem;
+      return check === Number(digits[8]);
+    }
+
+    function textOf(node) { return node ? (node.textContent || "").trim() : ""; }
+    function num(value) { const n = Number(String(value).replace(",", ".")); return Number.isFinite(n) ? n : 0; }
+    function add(out, kind, text) {
+      const li = document.createElement("li");
+      li.className = kind;
+      li.textContent = text;
+      out.appendChild(li);
+    }
+
+    render();
+  </script>
+</body>
+</html>

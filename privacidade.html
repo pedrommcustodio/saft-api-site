@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Política de privacidade (minuta) — API Validador SAF-T Portugal</title>
+  <style>
+    body { font-family: Georgia, serif; max-width: 42rem; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; color: #1a1a1a; }
+    .banner { background: #fff4d6; border: 1px solid #e0b84a; padding: 0.8rem 1rem; }
+    nav a { margin-right: 1rem; }
+  </style>
+</head>
+<body>
+  <p class="banner"><strong>Minuta para revisão. Isto não é aconselhamento jurídico.</strong>
+    Substitua todos os espaços entre parêntesis retos antes de publicar. Peça a um advogado que confira o texto com a situação real do operador.</p>
+  <nav>
+    <a href="index.html">SAF-T API</a>
+    <a href="privacy.html">English</a>
+    <a href="privacidade.html">Português</a>
+    <a href="termos.html">Termos</a>
+  </nav>
+  <h1>Política de privacidade</h1>
+  <p>Última actualização: 17 de outubro de 2026.</p>
+
+  <h2>1. Quem somos</h2>
+  <p>O operador desta API é [NOME COMPLETO], NIF [NIF], morada [MORADA], correio electrónico [EMAIL DE CONTACTO] («nós»).</p>
+
+  <h2>2. Âmbito</h2>
+  <p>Este aviso cobre a API de validação SAF-T (PT) e estas páginas. Não cobre o Zyla API Hub nem a RapidAPI. Essas empresas têm os seus próprios avisos, e um pedido feito através delas passa por elas antes de chegar a nós.</p>
+
+  <h2>3. Papéis</h2>
+  <p>A empresa que envia um ficheiro SAF-T é a responsável pelo tratamento dos dados pessoais nele contidos. Durante o tempo necessário para responder ao pedido, atuamos como subcontratante dessa empresa. Aplicam-se o Regulamento (UE) 2016/679 (RGPD) e a Lei n.º 58/2019, de 8 de agosto. Não decidimos a finalidade do tratamento. Deve existir um contrato de tratamento antes de um cliente empresarial usar a API. Esta página não é esse contrato.</p>
+
+  <h2>4. Dados que tratamos</h2>
+  <p>Um ficheiro SAF-T pode conter nomes de clientes e fornecedores, números de identificação fiscal, moradas, correios electrónicos, telefones e histórico de compras, além da identificação da própria empresa. Vemos também dados técnicos: tamanho do pedido, duração, contagens do resultado e um resumo curto (hash) do NIF do cabeçalho. Não criamos contas.</p>
+
+  <h2>5. Como o ficheiro é tratado</h2>
+  <p>O ficheiro é processado em memória e eliminado quando a resposta é enviada. Não é gravado numa base de dados, não é registado em diário e não é enviado por nós a nenhum outro serviço. Os carregamentos ficam em memória, sem ficheiro temporário de upload. A geração de Excel pode criar um ficheiro temporário de curta duração, apagado antes de a resposta ser devolvida. Não fazemos chamadas externas com o conteúdo do ficheiro (sem consulta VIES, sem serviço de erros que guarde o corpo do pedido).</p>
+
+  <h2>6. Diários</h2>
+  <p>Os diários podem conter um identificador de pedido, o número de bytes, a duração, as contagens de erros e avisos, e um prefixo SHA-256 do NIF do cabeçalho. Não contêm o nome do ficheiro, o corpo, nomes de clientes nem o NIF em claro. Retenção sugerida desses diários: [RETENÇÃO DOS DIÁRIOS, por exemplo 30 dias]. Confirme que isto corresponde ao alojamento que usar de facto.</p>
+
+  <h2>7. Onde decorre o tratamento</h2>
+  <p>O alojamento previsto é uma máquina virtual na Oracle Cloud Infrastructure numa região da UE, de preferência Frankfurt (eu-frankfurt-1) ou Madrid (eu-madrid-1), conforme a região de origem da tenancy. A plataforma (Zyla e/ou RapidAPI) fica à frente desse servidor e pode ver o ficheiro em trânsito. Diga-o na ficha do marketplace. Não afirme que só o operador vê o ficheiro.</p>
+
+  <h2>8. Fundamentos</h2>
+  <p>Quando somos subcontratantes, tratamos os dados segundo as instruções do responsável, para executar o pedido à API (artigo 28.º do RGPD). Os diários de segurança, se formos nós a definir a finalidade, assentam no interesse legítimo (artigo 6.º, n.º 1, alínea f)): manter o serviço fiável e detetar abusos, limitado aos campos da secção 6. A Lei n.º 41/2004 (privacidade nas comunicações electrónicas), com as alterações posteriores, só releva se mais tarde forem usados cookies ou armazenamento semelhante. Estas páginas não usam cookies.</p>
+
+  <h2>9. Conservação</h2>
+  <p>O conteúdo do ficheiro não é conservado depois da resposta. Não há histórico. Não conseguimos recuperar um ficheiro enviado antes, nem devolver uma cópia.</p>
+
+  <h2>10. Direitos</h2>
+  <p>Os titulares podem pedir ao responsável (a empresa que detém o SAF-T) o acesso, a rectificação, o apagamento, a limitação, a portabilidade e a oposição. Podem também reclamar junto da Comissão Nacional de Proteção de Dados (<a href="https://www.cnpd.pt">cnpd.pt</a>). Pedidos que nos sejam feitos sobre um ficheiro que já não temos serão respondidos com essa informação. Contacto: [EMAIL DE CONTACTO].</p>
+
+  <h2>11. Segurança</h2>
+  <p>A API recusa declarações de tipo de documento nos carregamentos, limita o tamanho do ficheiro e pode exigir o segredo da plataforma para que a origem não seja chamada directamente. O HTTPS termina no proxy reverso.</p>
+
+  <h2>12. Alterações</h2>
+  <p>Substitua este parágrafo pela forma como anunciará alterações. Até lá, a data no topo é a versão desta minuta.</p>
+</body>
+</html>

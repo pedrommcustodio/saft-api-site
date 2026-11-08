@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy policy (template) — SAF-T Portugal Validator API</title>
+  <style>
+    body { font-family: Georgia, serif; max-width: 42rem; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; color: #1a1a1a; }
+    .banner { background: #fff4d6; border: 1px solid #e0b84a; padding: 0.8rem 1rem; }
+    nav a { margin-right: 1rem; }
+  </style>
+</head>
+<body>
+  <p class="banner"><strong>Template for review. This is not legal advice.</strong>
+    Replace every placeholder in square brackets before publishing. Have a lawyer check this text against the operator’s actual setup.</p>
+  <nav>
+    <a href="index.html">SAF-T API</a>
+    <a href="privacy.html">English</a>
+    <a href="privacidade.html">Português</a>
+    <a href="terms.html">Terms</a>
+  </nav>
+  <h1>Privacy policy</h1>
+  <p>Last updated: 17 October 2026.</p>
+
+  <h2>1. Who we are</h2>
+  <p>The operator of this API is [OPERATOR LEGAL NAME], tax number (NIF) [NIF], address [POSTAL ADDRESS], email [CONTACT EMAIL] (“we”).</p>
+
+  <h2>2. What this notice covers</h2>
+  <p>This notice covers the SAF-T (PT) validator API and these website pages. It does not cover Zyla API Hub or RapidAPI. Those companies have their own notices, and a call made through them reaches them before it reaches us.</p>
+
+  <h2>3. Roles</h2>
+  <p>A business that uploads a SAF-T file is the controller of the personal data in that file. For the time it takes to answer the request, we act as that business’s processor. Regulation (EU) 2016/679 (GDPR) and Portuguese Law 58/2019 of 8 August apply. We do not decide why the file is processed. A data-processing agreement should be in place before a business customer relies on this API. This page is not that agreement.</p>
+
+  <h2>4. Data we process</h2>
+  <p>A SAF-T file can contain customer and supplier names, tax numbers, addresses, emails, phone numbers and purchase history, plus the company’s own identity. We also see technical data: request size, duration, the result counts, and a short hash of the header tax number. We do not create accounts.</p>
+
+  <h2>5. How the file is handled</h2>
+  <p>The file is processed in memory and discarded when the response is sent. It is not written to a database, not logged, and not sent to any other service by us. Uploads are kept in memory rather than in a temp upload file. Building an Excel file can create a short-lived temp file, which is deleted before the response is returned. We make no outbound call that carries file contents (no VIES lookup, no error service that stores the body).</p>
+
+  <h2>6. Logs</h2>
+  <p>Logs may contain a request id, the byte count, the duration, error and warning counts, and a short SHA-256 prefix of the header tax number. They do not contain the file name, the file body, customer names, or the raw tax number. Suggested retention for those logs: [LOG RETENTION, for example 30 days]. Confirm this matches the host you actually use.</p>
+
+  <h2>7. Where processing happens</h2>
+  <p>The planned host is an Oracle Cloud Infrastructure virtual machine in an EU region, preferably Frankfurt (eu-frankfurt-1) or Madrid (eu-madrid-1), subject to the tenancy home region. The marketplace gateway (Zyla and/or RapidAPI) sits in front of that host and can see the uploaded file in transit. Say so in the listing. Do not claim that nobody but you sees the file.</p>
+
+  <h2>8. Legal bases</h2>
+  <p>Where we are a processor, we process on the controller’s instructions in order to perform the API call (GDPR Article 28). Security logs, if we determine the purposes ourselves, rely on legitimate interests (Article 6(1)(f)): keeping the service reliable and detecting abuse, limited to the fields in section 6. Law 41/2004 (electronic communications privacy), as amended, matters only if cookies or similar storage are added later. These pages set no cookies.</p>
+
+  <h2>9. Retention</h2>
+  <p>File contents are not retained after the response. There is no history feature. We cannot recover a file that was uploaded earlier, and we cannot hand back a copy of it.</p>
+
+  <h2>10. Rights</h2>
+  <p>Data subjects can ask the controller (the business that holds the SAF-T) for access, rectification, erasure, restriction, portability and objection. They can also complain to the Comissão Nacional de Proteção de Dados (<a href="https://www.cnpd.pt">cnpd.pt</a>). Requests sent to us about a file we no longer have will be answered with that fact. Contact [CONTACT EMAIL].</p>
+
+  <h2>11. Security</h2>
+  <p>The API refuses document-type declarations in uploads, caps file size, and can require a marketplace proxy secret so that the origin is not called directly. HTTPS is terminated at the reverse proxy.</p>
+
+  <h2>12. Changes</h2>
+  <p>Replace this paragraph with how you will announce changes. Until then, the date at the top is the version of this template.</p>
+</body>
+</html>
